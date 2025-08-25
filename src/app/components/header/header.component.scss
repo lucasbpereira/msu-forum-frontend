@@ -1,0 +1,19 @@
+header {
+  width: 100dvw;
+  padding: .25rem .5rem;
+  border-bottom: #00000033 1px solid;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    width: 140px;
+  }
+
+  button {
+    width: 140px;
+  }
+}
