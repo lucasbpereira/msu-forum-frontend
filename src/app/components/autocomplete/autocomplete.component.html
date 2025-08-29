@@ -1,0 +1,53 @@
+<div class="autocomplete-container">
+  <div class="input-group">
+    <ng-icon name="iconoirSearch" class="icon" />
+    <input
+      type="text"
+      [formControl]="myControl"
+      [placeholder]="placeholder"
+      class="autocomplete-input"
+      (focus)="onFocus()"
+      (blur)="onBlur()"
+    />
+  </div>
+
+
+  @if (isFocused || myControl.value) {
+    @if(filteredOptions) {
+      @if (filteredOptions.length > 0) {
+        <ul class="autocomplete-list">
+          @for (option of filteredOptions; track option.id) {
+           <li class="autocomplete-item">
+              <a [routerLink]="['/questions', option.id]" class="block no-underline">
+                <h6 [innerHTML]="option.title | highlight:(myControl.value ?? '')"></h6>
+                <div
+                  [innerHTML]="
+                    option.body
+                      | limitCharactersLenght:120
+                      | highlight:(myControl.value ?? '')
+                      | formatBody">
+                </div>
+              </a>
+            </li>
+          }
+        </ul>
+      } @else {
+        <ul class="autocomplete-list">
+          <li class="autocomplete-item">
+            @if(!searching) {
+              Seja o primeiro a perguntar
+            } @else {
+              <div class="loading">
+                <msuf-loading></msuf-loading>
+                  Procurando por dúvidas semelhantes...
+              </div>
+
+            }
+          </li>
+        </ul>
+
+      }
+    }
+  }
+
+</div>

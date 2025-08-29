@@ -1,21 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
 
-// Include theming for Angular Material with `mat.theme()`.
-// This Sass mixin will define CSS variables that are used for styling Angular Material
-// components according to the Material 3 design spec.
-// Learn more about theming and how to use it for your application's
-// custom components at https://material.angular.dev/guide/theming
-@use '@angular/material' as mat;
-
-html {
-  @include mat.theme((
-    color: (
-      primary: mat.$azure-palette,
-      tertiary: mat.$blue-palette,
-    ),
-    typography: Roboto,
-    density: 0,
-  ));
+:root {
+  --neutral-black: #121619;
+  --neutral-white: #fff;
+  --roboto: "Roboto", sans-serif;
+  --neutral-600: #69717a;
 }
+
 
 body {
   // Default the application to a light color theme. This can be changed to
@@ -28,7 +19,7 @@ body {
   // variables at https://material.angular.dev/guide/system-variables
   background-color: var(--mat-sys-surface);
   color: var(--mat-sys-on-surface);
-  font: var(--mat-sys-body-medium);
+  font: var(--roboto);
 
   // Reset the user agent margin.
   margin: 0;
@@ -91,3 +82,35 @@ h1, h2, h3, h4, h5, h6 {
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+
+button.primary-btn {
+  display: flex;
+    height: 40px;
+    padding: 12px;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    border-radius: 12px;
+    border: 1px solid var(--neutral-black);
+    background: var(--neutral-white);
+    box-shadow: 0 3px 6px 0 rgba(0, 0, 0, .1);
+    color: var(--neutral-black);
+    font-family: var(--font-roboto);
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 100%;
+    transition: all ease-in-out .2s;
+    cursor: pointer;
+
+      &:hover {
+        background-color: var(--neutral-black);
+        color: var(--neutral-white)
+      }
+}
+
+a {
+  text-decoration: none;
+  color: var(--neutral-600)
+}

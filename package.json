@@ -27,9 +27,11 @@
     "@angular/compiler": "^20.2.0",
     "@angular/core": "^20.2.0",
     "@angular/forms": "^20.2.0",
-    "@angular/material": "^20.2.0",
     "@angular/platform-browser": "^20.2.0",
     "@angular/router": "^20.2.0",
+    "@ng-icons/core": "^32.1.0",
+    "@ng-icons/iconoir": "^32.1.0",
+    "gsap": "^3.13.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"

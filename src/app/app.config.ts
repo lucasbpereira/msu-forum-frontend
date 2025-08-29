@@ -3,6 +3,9 @@ import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
 import { provideHttpClient } from '@angular/common/http';
+import { provideIcons } from '@ng-icons/core';
+import { iconoirAreaSearch } from '@ng-icons/iconoir';
+
 
 export const appConfig: ApplicationConfig = {
   providers: [

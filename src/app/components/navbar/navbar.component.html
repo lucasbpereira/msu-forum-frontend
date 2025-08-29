@@ -1,3 +1,23 @@
-<p>
-  navbar works!
-</p>
+<nav>
+  <ul class="main-menu">
+    <li>
+      <a href="/">
+        <ng-icon name="iconoirHome" class="icon" /> Início
+      </a>
+    </li>
+    <li>
+      <a href="/dashboard">
+        <ng-icon name="iconoirHome" class="icon" /> Fazer uma pergunta
+      </a>
+    </li>
+  </ul>
+  <ul class="tags-menu">
+    @for (tag of tagList; track tag.id) {
+           <li class="autocomplete-item">
+              <a [routerLink]="['/questions/tag', tag.id]" class="block no-underline">
+                {{tag.name}}
+              </a>
+            </li>
+          }
+  </ul>
+</nav>
