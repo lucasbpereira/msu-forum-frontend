@@ -1,3 +1,17 @@
+<msuf-header
+  (selectedQuestion)="onSelectQuestion($event)"></msuf-header>
+<msuf-navbar></msuf-navbar>
 <div class="adsense">
   teste
 </div>
+
+
+<div class="adsense">
+  Ad
+</div>
+
+<main>
+   @for (usuario of lastQuestions; track usuario.id) {
+    <h3>{{ usuario.title }}</h3>
+  }
+</main>

@@ -4,6 +4,9 @@ import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { map, Observable, startWith } from 'rxjs';
 import { Questions, QuestionService } from '../../pages/question/question.service';
 import { AutocompleteComponent } from '../autocomplete/autocomplete.component';
+import { WalletComponent } from '../wallet/wallet.component';
+import { WalletService } from '../wallet/wallet.service';
+
 
 
 @Component({
@@ -12,8 +15,9 @@ import { AutocompleteComponent } from '../autocomplete/autocomplete.component';
   styleUrls: ['./header.component.scss'],
   imports: [
     FormsModule,
-    AutocompleteComponent
-  ],
+    AutocompleteComponent,
+    WalletComponent
+],
   standalone: true
 })
 export class HeaderComponent implements OnInit {
@@ -22,7 +26,10 @@ export class HeaderComponent implements OnInit {
   filteredQuestions: Questions[] = [];
   @Output() selectedQuestion= new EventEmitter();
 
-  constructor(private questionService: QuestionService) {
+  constructor(private questionService: QuestionService, private walletService: WalletService) {
+    walletService.walletState$.subscribe(data => {
+      console.log(data)
+    })
   }
 
   ngOnInit() {

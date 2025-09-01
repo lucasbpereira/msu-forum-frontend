@@ -1,0 +1,81 @@
+<div class="wallet-connect">
+  @if (!walletState.isConnected) {
+    <div class="connection-options">
+      <!-- <button
+        (click)="connect()"
+        [disabled]="isLoading"
+        class="primary-btn">
+        @if (isLoading) {
+          Conectando...
+        } @else {
+          Conectar MetaMask
+        }
+      </button>
+
+      <div class="divider">
+        <span>ou</span>
+      </div> -->
+
+      <button
+        (click)="connectToHenesys()"
+        [disabled]="isSwitchingNetwork"
+        class="henesys-button">
+        @if (isSwitchingNetwork) {
+          Signing to Henesys...
+        } @else {
+          🎮 Sign in
+        }
+      </button>
+    </div>
+  } @else {
+    <div class="wallet-info">
+      <div class="account-info">
+        <span class="label">Conta:</span>
+        <span class="address">{{ formatAddress(walletState.account) }}</span>
+      </div>
+
+      @if (walletState.balance) {
+        <div class="balance-info">
+          <span class="label">Saldo:</span>
+          <span class="balance">{{ walletState.balance }}
+            @if (walletState.chainId === '0x10B3E') {
+              NXPC
+            } @else {
+              ETH
+            }
+          </span>
+        </div>
+      }
+
+      <!-- <div class="chain-info">
+        <span class="label">Rede:</span>
+        <span class="chain">{{ getNetworkName(walletState.chainId) }}</span>
+      </div> -->
+
+      @if (walletState.chainId !== '0x10B3E' && !walletState.isConnected) {
+        <button
+          (click)="connectToHenesys()"
+          [disabled]="isSwitchingNetwork"
+          class="switch-henesys-button">
+          @if (isSwitchingNetwork) {
+            Alternando...
+          } @else {
+            {{walletState.chainId}} Ir para Henesys
+          }
+        </button>
+      } @else {
+        henesys
+      }
+
+      <!-- <button (click)="disconnect()" class="disconnect-button">
+        Desconectar
+      </button> -->
+    </div>
+  }
+
+  @if (error) {
+    <div class="error-message">
+      {{ error }}
+    </div>
+  }
+</div>
