@@ -18,7 +18,7 @@
         <ul class="autocomplete-list">
           @for (option of filteredOptions; track option.id) {
            <li class="autocomplete-item">
-              <a [routerLink]="['/questions', option.id]" class="block no-underline">
+              <a [routerLink]="['/question', option.id]" class="block no-underline">
                 <h6 [innerHTML]="option.title | highlight:(myControl.value ?? '')"></h6>
                 <div
                   [innerHTML]="

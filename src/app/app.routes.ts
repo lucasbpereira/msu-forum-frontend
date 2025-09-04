@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { HomepageComponent } from './pages/homepage/homepage.component';
 import { QuestionComponent } from './pages/question/question.component';
+import { authGuard } from './config/auth.guard';
 
 export const routes: Routes = [
   {
@@ -10,7 +11,7 @@ export const routes: Routes = [
   },
   {
     path: 'question/:id',
-    component: QuestionComponent,
-    pathMatch: 'full'
+    pathMatch: 'full',
+    component: QuestionComponent, canActivate: [authGuard]
   },
 ];
