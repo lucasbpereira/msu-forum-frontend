@@ -1,21 +1,6 @@
 <div class="wallet-connect">
   @if (!walletState.isConnected) {
     <div class="connection-options">
-      <!-- <button
-        (click)="connect()"
-        [disabled]="isLoading"
-        class="primary-btn">
-        @if (isLoading) {
-          Conectando...
-        } @else {
-          Conectar MetaMask
-        }
-      </button>
-
-      <div class="divider">
-        <span>ou</span>
-      </div> -->
-
       <button
         (click)="connectToHenesys()"
         [disabled]="isSwitchingNetwork"
@@ -46,12 +31,6 @@
           </span>
         </div>
       }
-
-      <!-- <div class="chain-info">
-        <span class="label">Rede:</span>
-        <span class="chain">{{ getNetworkName(walletState.chainId) }}</span>
-      </div> -->
-
       @if (walletState.chainId !== '0x10B3E' && !walletState.isConnected) {
         <button
           (click)="connectToHenesys()"
@@ -66,10 +45,6 @@
       } @else {
         henesys
       }
-
-      <!-- <button (click)="disconnect()" class="disconnect-button">
-        Desconectar
-      </button> -->
     </div>
   }
 
