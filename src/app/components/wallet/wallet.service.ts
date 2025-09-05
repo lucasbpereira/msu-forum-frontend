@@ -1,6 +1,39 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { ethers } from 'ethers';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
+
+const MSUKEY = environment.MSU_KEY;
+
+export interface CharacterData {
+  classCode: number;
+  jobCode: number;
+  level: number;
+  world: number;
+  expr: string;
+  imageUrl: string;
+}
+
+export interface Character {
+  name: string;
+  assetKey: string;
+  tokenId: string;
+  categoryNo: number;
+  data: CharacterData;
+}
+
+export interface PaginationResult {
+  totalCount: number;
+  pageSize: number;
+  currPageNo: number;
+  isLastPage: boolean;
+}
+
+export interface CharactersResponse {
+  characters: Character[];
+  paginationResult: PaginationResult;
+}
 
 declare global {
   interface Window {
@@ -41,6 +74,7 @@ export interface NetworkConfig {
   providedIn: 'root'
 })
 export class WalletService {
+  private apiUrl = 'http://localhost:3000'; // ajuste para sua API
 
   private provider: ethers.BrowserProvider | null = null;
   private signer: ethers.JsonRpcSigner | null = null;
@@ -54,7 +88,7 @@ export class WalletService {
 
   public walletState$ = this.walletState.asObservable();
 
-  constructor() {
+  constructor(private http: HttpClient) {
     this.checkInitialConnection();
   }
 
@@ -207,5 +241,20 @@ async switchToHenesysNetwork(): Promise<void> {
       throw error;
     }
   }
+}
+
+  hasRegister(wallet: string) {
+    return this.http.post<{ exists: boolean }>(`${this.apiUrl}/wallet`, { wallet });
+  }
+
+getWalletMSU(wallet: string) {
+  const headers = new HttpHeaders({
+    'x-nxopen-api-key': environment.MSU_KEY
+  });
+
+  return this.http.get<CharactersResponse>(
+    `https://openapi.msu.io/v1beta/accounts/${wallet}/characters?paginationParam.pageNo=1`,
+    { headers }
+  );
 }
 }
