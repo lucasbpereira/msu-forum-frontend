@@ -1,5 +1,4 @@
-import { JsonPipe } from '@angular/common';
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, Output, signal, computed, effect } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { iconoirSearch, iconoirIconoir } from '@ng-icons/iconoir';
@@ -11,81 +10,117 @@ import { HighlightPipe } from '../../pipes/highlight.pipe';
 import { debounceTime, distinctUntilChanged, filter, switchMap, tap } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { RouterModule } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'msuf-autocomplete',
   templateUrl: './autocomplete.component.html',
   styleUrls: ['./autocomplete.component.scss'],
-  imports: [ReactiveFormsModule, NgIcon, LoadingComponent, FormatBodyPipe, LimitCharactersLenghtPipe, HighlightPipe, RouterModule],
-  viewProviders: [provideIcons({ iconoirIconoir, iconoirSearch })]
+  imports: [
+    ReactiveFormsModule,
+    NgIcon,
+    LoadingComponent,
+    FormatBodyPipe,
+    LimitCharactersLenghtPipe,
+    HighlightPipe,
+    RouterModule
+  ],
+  viewProviders: [provideIcons({ iconoirIconoir, iconoirSearch })],
+  standalone: true
 })
-export class AutocompleteComponent implements OnChanges, OnInit {
+export class AutocompleteComponent {
   myControl = new FormControl('');
-  @Input() options: any[] = [];
+
+  @Input() options: Questions[] = [];
   @Input() placeholder!: string;
-  filteredOptions: any[] = [];
-  isFocused = false;
-  @Output() selectedOption = new EventEmitter();
-  searching = false;
+  @Output() selectedOption = new EventEmitter<Questions>();
 
-  // cache local para não bater no backend repetidamente
-  private cache = new Map<string, any[]>();
+  // Signals para gerenciar estado local
+  private readonly _filteredOptions = signal<Questions[]>([]);
+  private readonly _isFocused = signal<boolean>(false);
+  private readonly _searching = signal<boolean>(false);
 
-  constructor(private questionService: QuestionService) {}
+  // Signals públicos somente leitura
+  public readonly filteredOptions = this._filteredOptions.asReadonly();
+  public readonly isFocused = this._isFocused.asReadonly();
+  public readonly searching = this._searching.asReadonly();
 
-  ngOnInit(): void {
-    this.myControl.valueChanges.pipe(
-      debounceTime(400),              // espera 400ms após o usuário parar de digitar
-      distinctUntilChanged(),         // evita requisições duplicadas
-      tap(value => {
-        if(value)
-          this.searching = value?.length > 3; // só ativa loading se for pesquisar no backend
-      }),
-      switchMap(value => {
-        if (!value || value.length <= 3) {
-          return of(this._filterLocal(value || '')); // pesquisa só local
-        }
+  // Signal para converter o valor do FormControl
+  private readonly searchValue = toSignal(this.myControl.valueChanges, { initialValue: '' });
 
-        // consulta no backend
-        return this.questionService.getSearchResults(value).pipe(
-          tap(response => {
-            this.cache.set(value.toLowerCase(), response); // salva no cache
-            this.searching = false;
-          })
-        );
-      })
-    ).subscribe(results => {
-      this.filteredOptions = results;
+  // Cache local para não bater no backend repetidamente
+  private cache = new Map<string, Questions[]>();
+
+  constructor(private questionService: QuestionService) {
+    // Effect para reagir a mudanças no valor de busca
+    effect(() => {
+      const value = this.searchValue() || '';
+      this.handleSearch(value);
+    });
+
+    // Effect para reagir a mudanças nas opções de input
+    effect(() => {
+      if (this.options.length > 0) {
+        this._filteredOptions.set(this.options);
+      }
     });
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['options']) {
-      this.filteredOptions = changes['options'].currentValue || [];
+  private handleSearch(value: string): void {
+    if (!value || value.length <= 3) {
+      // Pesquisa local
+      const localResults = this._filterLocal(value);
+      this._filteredOptions.set(localResults);
+      this._searching.set(false);
+      return;
     }
+
+    // Verifica cache primeiro
+    const cached = this.cache.get(value.toLowerCase());
+    if (cached) {
+      this._filteredOptions.set(cached);
+      this._searching.set(false);
+      return;
+    }
+
+    // Busca no backend
+    this._searching.set(true);
+    this.questionService.getSearchResults(value).subscribe({
+      next: (results) => {
+        this.cache.set(value.toLowerCase(), results);
+        this._filteredOptions.set(results);
+        this._searching.set(false);
+      },
+      error: (error) => {
+        console.error('Erro na busca:', error);
+        this._searching.set(false);
+      }
+    });
   }
 
+
+
   /** pesquisa somente no array de opções já carregado */
-  private _filterLocal(value: string): any[] {
+  private _filterLocal(value: string): Questions[] {
     const filterValue = value.toLowerCase();
     return this.options.filter(option =>
       (option.title + option.body).toLowerCase().includes(filterValue)
     );
   }
 
-  selectOption(option: any) {
+  selectOption(option: Questions) {
     this.myControl.setValue(option.title); // exibe o nome no input
-    this.filteredOptions = [];
-    this.isFocused = false;
+    this._filteredOptions.set([]);
+    this._isFocused.set(false);
 
     this.selectedOption.emit(option);
   }
 
   onFocus() {
-    this.isFocused = true;
+    this._isFocused.set(true);
   }
 
   onBlur() {
-    setTimeout(() => this.isFocused = false, 200);
+    setTimeout(() => this._isFocused.set(false), 200);
   }
 }

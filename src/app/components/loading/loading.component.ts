@@ -1,10 +1,11 @@
-import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component } from '@angular/core';
 import { gsap } from 'gsap';
 
 @Component({
   selector: 'msuf-loading',
   templateUrl: './loading.component.html',
-  styleUrls: ['./loading.component.css']
+  styleUrls: ['./loading.component.css'],
+  standalone: true
 })
 export class LoadingComponent implements AfterViewInit {
   ngAfterViewInit() {

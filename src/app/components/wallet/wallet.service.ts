@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { Injectable, signal, computed } from '@angular/core';
+import { Observable, tap } from 'rxjs';
 import { ethers } from 'ethers';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
@@ -79,14 +79,23 @@ export class WalletService {
   private provider: ethers.BrowserProvider | null = null;
   private signer: ethers.JsonRpcSigner | null = null;
 
-  private walletState = new BehaviorSubject<WalletConnection>({
+  // Signal privado para o estado da wallet
+  private readonly _walletState = signal<WalletConnection>({
     isConnected: false,
     account: null,
     chainId: null,
     balance: null
   });
 
-  public walletState$ = this.walletState.asObservable();
+  // Signal público somente leitura
+  public readonly walletState = this._walletState.asReadonly();
+
+  // Computed signals para propriedades específicas
+  public readonly isConnected = computed(() => this._walletState().isConnected);
+  public readonly account = computed(() => this._walletState().account);
+  public readonly chainId = computed(() => this._walletState().chainId);
+  public readonly balance = computed(() => this._walletState().balance);
+  public readonly isHenesysNetwork = computed(() => this._walletState().chainId === '0x10b3e');
 
   constructor(private http: HttpClient) {
     this.checkInitialConnection();
@@ -117,13 +126,14 @@ export class WalletService {
       this.provider = new ethers.BrowserProvider(window.ethereum);
       this.signer = await this.provider.getSigner();
 
-      // Obter informações da conta
-      const account = accounts[0];
+      // Obter informações da conta - usar checksum address
+      const rawAccount = accounts[0];
+      const account = ethers.getAddress(rawAccount); // Convert to checksum format
       const chainId = await window.ethereum.request({ method: 'eth_chainId' });
       const balance = await this.getBalance(account);
 
       // Atualizar estado
-      this.walletState.next({
+      this._walletState.set({
         isConnected: true,
         account,
         chainId,
@@ -141,7 +151,7 @@ export class WalletService {
 
   // Desconectar wallet
   disconnectWallet(): void {
-    this.walletState.next({
+    this._walletState.set({
       isConnected: false,
       account: null,
       chainId: null,
@@ -257,4 +267,9 @@ getWalletMSU(wallet: string) {
     { headers }
   );
 }
+
+  // Getter para obter o estado atual da wallet
+  getCurrentWalletState(): WalletConnection {
+    return this._walletState();
+  }
 }

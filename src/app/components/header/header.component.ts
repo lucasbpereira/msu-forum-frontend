@@ -1,7 +1,5 @@
-import { AsyncPipe } from '@angular/common';
-import { Component, EventEmitter, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
-import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { map, Observable, startWith } from 'rxjs';
+import { Component, EventEmitter, Output, computed, effect } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { Questions, QuestionService } from '../../pages/question/question.service';
 import { AutocompleteComponent } from '../autocomplete/autocomplete.component';
 import { WalletComponent } from '../wallet/wallet.component';
@@ -17,28 +15,52 @@ import { WalletService } from '../wallet/wallet.service';
     FormsModule,
     AutocompleteComponent,
     WalletComponent
-],
+  ],
   standalone: true
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent {
+  @Output() selectedQuestion = new EventEmitter<Questions>();
 
-  lastQuestions: Questions[] = [];
-  filteredQuestions: Questions[] = [];
-  @Output() selectedQuestion= new EventEmitter();
+  private hasInitializedQuestions = false;
 
-  constructor(private questionService: QuestionService, private walletService: WalletService) {
-    walletService.walletState$.subscribe(data => {
-      console.log(data)
-    })
-  }
+  // Computed signals baseados nos serviços
+  public readonly questions = computed(() => this.questionService.questions());
+  public readonly questionsLoading = computed(() => this.questionService.loading());
+  public readonly walletState = computed(() => this.walletService.walletState());
 
-  ngOnInit() {
-    this.questionService.getLastQuestions().subscribe(data => {
-      this.lastQuestions = data;
+  constructor(
+    private questionService: QuestionService,
+    private walletService: WalletService
+  ) {
+    // Effect para carregar questões apenas uma vez quando o componente é inicializado
+    effect(() => {
+      const questions = this.questions();
+      const loading = this.questionsLoading();
+
+      // Only load if we have no questions, are not currently loading, and haven't initialized yet
+      if (questions.length === 0 && !loading && !this.hasInitializedQuestions) {
+        this.hasInitializedQuestions = true;
+        this.questionService.getLastQuestions().subscribe({
+          next: () => {
+            console.log('Questions loaded successfully');
+          },
+          error: (error) => {
+            console.error('Error loading questions:', error);
+            // Reset initialization flag on error to allow retry
+            this.hasInitializedQuestions = false;
+          }
+        });
+      }
+    }, { allowSignalWrites: true });
+
+    // Effect para reagir a mudanças no estado da wallet
+    effect(() => {
+      const wallet = this.walletState();
+      console.log('Wallet state changed:', wallet);
     });
   }
 
   onSelectQuestion(question: Questions) {
-    this.selectedQuestion.emit(question)
+    this.selectedQuestion.emit(question);
   }
 }

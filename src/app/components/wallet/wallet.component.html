@@ -1,73 +1,64 @@
 <div class="wallet-connect">
-  @if (!walletState.isConnected) {
+  @if (!walletState().isConnected) {
     <div class="connection-options">
       <button
         (click)="connectToHenesys()"
-        [disabled]="isSwitchingNetwork"
+        [disabled]="isSwitchingNetwork()"
         class="primary-btn">
-        @if (isSwitchingNetwork) {
-          Signing to Henesys...
+        @if (isSwitchingNetwork()) {
+          <span>Signing to Henesys...</span>
         } @else {
-          Sign in
+          <span>Sign in</span>
         }
       </button>
     </div>
-  } @else {
+  }
+  @else {
     <div class="wallet">
-
+      @if (currentUser(); as userInfo) {
+        <div class="user-profile">
+          <img class="avatar" [src]="userInfo?.user?.avatar_url">
+        </div>
+        <div class="user-details">
+          <span class="username">{{ userInfo?.user?.username }}</span>
+          <span class="role">{{ userInfo?.user?.role }}</span>
+          <small class="persistence-status">✓ Dados salvos localmente</small>
+        </div>
+      } @else {
+        <msuf-loading></msuf-loading>
+      }
       <div class="wallet-info">
         <div class="account-info">
+
           <span class="label">Conta:</span>
-          <span class="address">{{ formatAddress(walletState.account) }}</span>
+          <span class="address">{{ formatAddress(walletState().account) }}</span>
         </div>
 
-        @if (walletState.balance) {
+        @if (walletState().balance) {
           <div class="balance-info">
             <span class="label">Saldo:</span>
-            <span class="balance">{{ walletState.balance.slice(0, 7) }}
-              @if (walletState.chainId?.toUpperCase() == '0X10B3E') {
-                NXPC
+            <span class="balance">
+              {{ walletState().balance!.slice(0, 7) }}
+              @if (walletState().chainId?.toUpperCase() == '0X10B3E') {
+                <span> NXPC</span>
               } @else {
-                ETH
+                <span> ETH</span>
               }
             </span>
           </div>
         }
-
-        <!-- <div class="chain-info">
-          <span class="label">Rede:</span>
-          <span class="chain">{{ getNetworkName(walletState.chainId?.toUpperCase()) }}</span>
-        </div> -->
-
-          <!-- <button
-            (click)="connectToHenesys()"
-            [disabled]="isSwitchingNetwork"
-            class="switch-henesys-button">
-            @if (isSwitchingNetwork) {
-              Alternando...
-            } @else {
-              {{walletState.chainId?.toUpperCase()}} Ir para Henesys
-            }
-          </button> -->
+      </div>
 
 
-        </div>
+
+    </div>
+  }
         <button (click)="disconnect()" class="disconnect-button">
           Desconectar
         </button>
-      } @else {
-        henesys
-      }
-
-      <!-- <button (click)="disconnect()" class="disconnect-button">
-        Desconectar
-      </button> -->
-    </div>
-  }
-
-  @if (error) {
+  @if (error()) {
     <div class="error-message">
-      {{ error }}
+      {{ error() }}
     </div>
   }
 </div>

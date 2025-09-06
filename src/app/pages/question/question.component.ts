@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, computed, effect } from '@angular/core';
 import { Questions, QuestionService } from './question.service';
 import { HeaderComponent } from '../../components/header/header.component';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
@@ -13,25 +13,42 @@ import { NavbarComponent } from '../../components/navbar/navbar.component';
     NavbarComponent
   ]
 })
-export class QuestionComponent implements OnInit {
+export class QuestionComponent {
+  // Computed signals baseados no QuestionService
+  public readonly lastQuestions = computed(() => this.service.questions());
+  public readonly questionsLoading = computed(() => this.service.loading());
+  public readonly questionsError = computed(() => this.service.error());
+  public readonly questionsByDate = computed(() => this.service.questionsByDate());
 
-  lastQuestions!: Questions[];
+  private hasInitialized = false;
 
+  constructor(private service: QuestionService) {
+    // Effect para carregar questões apenas uma vez quando o componente é inicializado
+    effect(() => {
+      const questions = this.lastQuestions();
+      const loading = this.questionsLoading();
+      const error = this.questionsError();
 
-  constructor(private service: QuestionService) { }
-
-  ngOnInit() {
-    this.getLastQuestions()
+      // Only load if we have no questions, are not currently loading, no error, and haven't initialized yet
+      if (questions.length === 0 && !loading && !error && !this.hasInitialized) {
+        this.hasInitialized = true;
+        this.getLastQuestions();
+      }
+    }, { allowSignalWrites: true });
   }
 
   getLastQuestions() {
-    this.service.getLastQuestions().subscribe(res => {
-      console.log(res)
-      this.lastQuestions = res;
-    })
+    this.service.getLastQuestions().subscribe({
+      next: (res) => {
+        console.log('Questões carregadas:', res);
+      },
+      error: (error) => {
+        console.error('Erro ao carregar questões:', error);
+      }
+    });
   }
 
-    onSelectQuestion(question: any) {
-    console.log(question)
+  onSelectQuestion(question: Questions) {
+    console.log(question);
   }
 }

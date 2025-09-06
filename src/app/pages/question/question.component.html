@@ -11,7 +11,7 @@
 </div>
 
 <main>
-   @for (usuario of lastQuestions; track usuario.id) {
+   @for (usuario of lastQuestions(); track usuario.id) {
     <h3>{{ usuario.title }}</h3>
   }
 </main>

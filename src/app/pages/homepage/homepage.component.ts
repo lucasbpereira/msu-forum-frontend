@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { HeaderComponent } from '../../components/header/header.component';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
+import { Questions } from '../question/question.service';
 
 @Component({
   selector: 'msuf-homepage',
@@ -12,14 +13,9 @@ import { NavbarComponent } from '../../components/navbar/navbar.component';
     NavbarComponent
   ]
 })
-export class HomepageComponent implements OnInit {
+export class HomepageComponent {
 
-  constructor() { }
-
-  ngOnInit() {
-  }
-
-  onSelectQuestion(question: any) {
-    console.log(question)
+  onSelectQuestion(question: Questions) {
+    console.log(question);
   }
 }

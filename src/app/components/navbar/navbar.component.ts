@@ -1,11 +1,8 @@
-import { TagService, Tags } from './../../pages/tag/tag.service';
-import { Component, OnInit } from '@angular/core';
+import { Component, computed, effect } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { iconoirHome, iconoirIconoir } from '@ng-icons/iconoir';
-import { FormatBodyPipe } from '../../pipes/formatBody.pipe';
-import { HighlightPipe } from '../../pipes/highlight.pipe';
-import { LimitCharactersLenghtPipe } from '../../pipes/limitCharactersLenght.pipe';
+import { TagService, Tags } from './../../pages/tag/tag.service';
 
 @Component({
   selector: 'msuf-navbar',
@@ -13,17 +10,39 @@ import { LimitCharactersLenghtPipe } from '../../pipes/limitCharactersLenght.pip
   styleUrls: ['./navbar.component.scss'],
   imports: [NgIcon, RouterModule],
   viewProviders: [provideIcons({ iconoirIconoir, iconoirHome })],
+  standalone: true
 })
-export class NavbarComponent implements OnInit {
+export class NavbarComponent {
+  private hasInitializedTags = false;
 
-  tagList: Tags[] = [];
+  // Computed signals baseados no TagService
+  public readonly tags = computed(() => this.tagService.tags());
+  public readonly tagsLoading = computed(() => this.tagService.loading());
+  public readonly tagsError = computed(() => this.tagService.error());
+  public readonly popularTags = computed(() => this.tagService.popularTags());
 
-  constructor(private tagService: TagService) { }
+  constructor(private tagService: TagService) {
+    // Effect para carregar tags apenas uma vez quando o componente é inicializado
+    effect(() => {
+      const tags = this.tags();
+      const loading = this.tagsLoading();
+      const error = this.tagsError();
 
-  ngOnInit() {
-    this.tagService.getTags().subscribe(response => {
-      this.tagList = response
-    })
+      // Only load if we have no tags, are not currently loading, no error, and haven't initialized yet
+      if (tags.length === 0 && !loading && !error && !this.hasInitializedTags) {
+        this.hasInitializedTags = true;
+        this.tagService.getTags().subscribe({
+          next: () => {
+            console.log('Tags loaded successfully');
+          },
+          error: (error) => {
+            console.error('Error loading tags:', error);
+            // Reset initialization flag on error to allow retry
+            this.hasInitializedTags = false;
+          }
+        });
+      }
+    }, { allowSignalWrites: true });
   }
 
 }

@@ -12,11 +12,11 @@
   </div>
 
 
-  @if (isFocused || myControl.value) {
-    @if(filteredOptions) {
-      @if (filteredOptions.length > 0) {
+  @if (isFocused() || myControl.value) {
+    @if(filteredOptions()) {
+      @if (filteredOptions().length > 0) {
         <ul class="autocomplete-list">
-          @for (option of filteredOptions; track option.id) {
+          @for (option of filteredOptions(); track option.id) {
            <li class="autocomplete-item">
               <a [routerLink]="['/question', option.id]" class="block no-underline">
                 <h6 [innerHTML]="option.title | highlight:(myControl.value ?? '')"></h6>
@@ -34,7 +34,7 @@
       } @else {
         <ul class="autocomplete-list">
           <li class="autocomplete-item">
-            @if(!searching) {
+            @if(!searching()) {
               Seja o primeiro a perguntar
             } @else {
               <div class="loading">

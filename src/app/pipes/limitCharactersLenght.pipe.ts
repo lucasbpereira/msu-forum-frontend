@@ -1,7 +1,8 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-  name: 'limitCharactersLenght'
+  name: 'limitCharactersLenght',
+  standalone: true
 })
 export class LimitCharactersLenghtPipe implements PipeTransform {
 
