@@ -32,7 +32,7 @@ display: flex;
   width: 100%;
   padding: 12px 20px;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--border-radius);
   cursor: pointer;
   font-weight: 600;
   font-size: 14px;
@@ -56,7 +56,7 @@ display: flex;
   width: 100%;
   padding: 10px 16px;
   border: 2px solid #8a2be2;
-  border-radius: 8px;
+  border-radius: var(--border-radius);
   cursor: pointer;
   font-weight: 600;
   font-size: 13px;
@@ -79,41 +79,89 @@ display: flex;
 
 .wallet {
   display: flex;
-}
-
-
-.user-profile {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  width: 40px;
-  height: 40px;
-  background-color: #ffc107;
-  border-radius: 50%;
-  position: relative;
-  overflow: hidden;
-}
-
-.user-profile .avatar {
-  width: 100px;
-  height: 100px;
-  overflow: hidden;
-  object-fit: cover;
-  display: block;
-  position: absolute;
-}
-
-.user-profile .user-details {
-  display: flex;
   flex-direction: column;
+  position: relative;
+
+  .user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  cursor: pointer;
+
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 40px;
+      height: 40px;
+      background-color: #ffc107;
+      border-radius: 50%;
+      position: relative;
+      overflow: hidden;
+
+      .avatar {
+        width: 100px;
+        height: 100px;
+        overflow: hidden;
+        object-fit: cover;
+        display: block;
+        position: absolute;
+      }
+
+    }
+
+    .user-details {
+      display: flex;
+      flex-direction: column;
+
+      .username {
+        font-weight: bold;
+        color: #333;
+      }
+
+      .role {
+        font-size: 0.8em;
+        color: #666;
+      }
+    }
+  }
+
+  .wallet-info{
+    position: absolute;
+    top: calc(50px + .5rem);
+    right: 0;
+    width: 250px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    flex-direction: column;
+    padding: 1rem;
+    border: 1px solid var(--neutral-black);
+    border-radius: 6px;
+
+    &.hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .account-info {
+      display: flex;
+
+      gap: .25rem;
+
+    }
+  }
 }
 
-.user-profile .username {
-  font-weight: bold;
-  color: #333;
-}
+.disconnect-button {
+  background-color: transparent;
+  border: 0;
+  margin: 4px 1rem;
+  width: 42px;
+  height: 42px;
+  cursor: pointer;
 
-.user-profile .role {
-  font-size: 0.8em;
-  color: #666;
+  .icon {
+    font-size: 24px;
+  }
 }

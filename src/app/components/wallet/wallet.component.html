@@ -14,47 +14,40 @@
     </div>
   }
   @else {
-    <div class="wallet">
+    <div class="wallet" (click)="_isWalletInfoVisible = !_isWalletInfoVisible">
       @if (currentUser(); as userInfo) {
-        <div class="user-profile">
-          <img class="avatar" [src]="userInfo?.user?.avatar_url">
-        </div>
-        <div class="user-details">
-          <span class="username">{{ userInfo?.user?.username }}</span>
-          <span class="role">{{ userInfo?.user?.role }}</span>
-          <small class="persistence-status">✓ Dados salvos localmente</small>
+        <div class="user">
+          <div class="user-profile">
+            <img class="avatar" [src]="userInfo?.user?.avatar_url">
+          </div>
+          <div class="user-details">
+            <span class="username">{{ userInfo?.user?.username }}</span>
+            <span class="role">{{ userInfo?.user?.role }}</span>
+          </div>
         </div>
       } @else {
         <msuf-loading></msuf-loading>
       }
-      <div class="wallet-info">
+      <div class="wallet-info" [class.hidden]="!_isWalletInfoVisible">
         <div class="account-info">
 
-          <span class="label">Conta:</span>
-          <span class="address">{{ formatAddress(walletState().account) }}</span>
+          <span class="address">{{ formatAddress(walletState().account) }} <ng-icon name="iconoirCopy" class="icon" (click)="copyWallet()" /></span>
         </div>
 
         @if (walletState().balance) {
           <div class="balance-info">
-            <span class="label">Saldo:</span>
+            <span class="label">NXPC:</span>
             <span class="balance">
               {{ walletState().balance!.slice(0, 7) }}
-              @if (walletState().chainId?.toUpperCase() == '0X10B3E') {
-                <span> NXPC</span>
-              } @else {
-                <span> ETH</span>
-              }
             </span>
           </div>
         }
       </div>
-
-
-
     </div>
+
   }
         <button (click)="disconnect()" class="disconnect-button">
-          Desconectar
+          <ng-icon name="iconoirLogOut" class="icon" (click)="copyWallet()" />
         </button>
   @if (error()) {
     <div class="error-message">

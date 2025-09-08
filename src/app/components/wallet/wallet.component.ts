@@ -4,19 +4,24 @@ import { AuthService, User } from '../../config/auth.service';
 import { Router } from '@angular/router';
 import { getAddress } from 'ethers';
 import { LoadingComponent } from '../loading/loading.component';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { iconoirIconoir, iconoirLogOut, iconoirCopy } from '@ng-icons/iconoir';
 
 @Component({
   selector: 'msuf-wallet',
   templateUrl: './wallet.component.html',
   styleUrls: ['./wallet.component.scss'],
   standalone: true,
-  imports: [LoadingComponent],
+  imports: [LoadingComponent, NgIcon],
+    viewProviders: [provideIcons({ iconoirIconoir, iconoirLogOut, iconoirCopy })],
+
 })
 export class WalletComponent implements OnInit {
   // Signals para gerenciar estado local
   private readonly _isLoading = signal<boolean>(false);
   private readonly _isSwitchingNetwork = signal<boolean>(false);
   private readonly _error = signal<string | null>(null);
+  _isWalletInfoVisible = false;
 
   // Signals públicos somente leitura
   public readonly isLoading = this._isLoading.asReadonly();
@@ -27,6 +32,8 @@ export class WalletComponent implements OnInit {
   public readonly walletState = computed(() => this.walletService.walletState());
   public readonly currentUser = computed(() => this.authService.currentUser());
   public readonly isAuthenticated = computed(() => this.authService.isAuthenticated());
+
+
 
   // Computed signal para endereço formatado
   public readonly formattedAddress = computed(() => {
@@ -210,6 +217,22 @@ async connectToHenesys() {
           this._isLoading.set(false);
         }
       });
+    }
+  }
+
+  copyWallet() {
+    const accountToCopy: string = this.walletState().account || '';
+
+     if (!navigator.clipboard) {
+      alert('Não foi possível copiar. Seu navegador não tem suporte.');
+      return;
+    }
+
+    try {
+      navigator.clipboard.writeText(accountToCopy);
+    } catch (err) {
+      console.error('Falha ao copiar o texto: ', err);
+      alert('Ocorreu um erro ao tentar copiar o endereço.');
     }
   }
 }
