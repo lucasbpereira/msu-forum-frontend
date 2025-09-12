@@ -1,3 +1,4 @@
+import { AuthService } from './../../config/auth.service';
 import { Component, computed, effect } from '@angular/core';
 import { Questions, QuestionService } from './question.service';
 import { HeaderComponent } from '../../components/header/header.component';
@@ -19,10 +20,11 @@ export class QuestionComponent {
   public readonly questionsLoading = computed(() => this.service.loading());
   public readonly questionsError = computed(() => this.service.error());
   public readonly questionsByDate = computed(() => this.service.questionsByDate());
+  public readonly currentUser = computed(() => this.authService.currentUser());
 
   private hasInitialized = false;
 
-  constructor(private service: QuestionService) {
+  constructor(private service: QuestionService, private authService: AuthService) {
     // Effect para carregar questões apenas uma vez quando o componente é inicializado
     effect(() => {
       const questions = this.lastQuestions();

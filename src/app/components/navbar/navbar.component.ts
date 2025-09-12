@@ -1,7 +1,7 @@
 import { Component, computed, effect } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { iconoirHome, iconoirIconoir } from '@ng-icons/iconoir';
+import { iconoirShieldQuestion, iconoirHome, iconoirIconoir } from '@ng-icons/iconoir';
 import { TagService, Tags } from './../../pages/tag/tag.service';
 
 @Component({
@@ -9,7 +9,7 @@ import { TagService, Tags } from './../../pages/tag/tag.service';
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss'],
   imports: [NgIcon, RouterModule],
-  viewProviders: [provideIcons({ iconoirIconoir, iconoirHome })],
+  viewProviders: [provideIcons({ iconoirIconoir, iconoirHome, iconoirShieldQuestion })],
   standalone: true
 })
 export class NavbarComponent {

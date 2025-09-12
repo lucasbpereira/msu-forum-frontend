@@ -1,23 +1,24 @@
 <nav>
   <ul class="main-menu">
     <li>
-      <a href="/">
-        <ng-icon name="iconoirHome" class="icon" /> Início
+      <a routerLink="/">
+        <ng-icon name="iconoirHome" class="icon" /> Home
       </a>
     </li>
     <li>
-      <a href="/dashboard">
-        <ng-icon name="iconoirHome" class="icon" /> Fazer uma pergunta
+      <a routerLink="/question">
+        <ng-icon name="iconoirShieldQuestion" class="icon" /> Make a question
       </a>
     </li>
   </ul>
+  <hr />
   <ul class="tags-menu">
     @for (tag of tags(); track tag.id) {
-           <li class="autocomplete-item">
-              <a [routerLink]="['/questions/tag', tag.id]" class="block no-underline">
-                {{tag.name}}
-              </a>
-            </li>
-          }
+      <li class="autocomplete-item">
+        <a [routerLink]="['/questions/tag', tag.id]" class="block no-underline">
+          {{tag.name}}
+        </a>
+      </li>
+    }
   </ul>
 </nav>

@@ -44,14 +44,14 @@
         }
       </div>
     </div>
-
+    <button (click)="disconnect()" class="disconnect-button">
+      <ng-icon name="iconoirLogOut" class="icon" (click)="copyWallet()" />
+    </button>
   }
-        <button (click)="disconnect()" class="disconnect-button">
-          <ng-icon name="iconoirLogOut" class="icon" (click)="copyWallet()" />
-        </button>
-  @if (error()) {
+
+  <!-- @if (error()) {
     <div class="error-message">
       {{ error() }}
     </div>
-  }
+  } -->
 </div>

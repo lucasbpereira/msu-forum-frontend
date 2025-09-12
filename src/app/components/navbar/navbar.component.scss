@@ -1,14 +1,38 @@
 nav {
   width: 20dvw;
-  min-width: 270px;
+  width: 270px;
   background-color: var(--neutral-white);
-  min-height: calc(100dvh - 50px - 4rem);
-
+  min-height: calc(100dvh - 50px);
+  border-right: 1px solid #00000033;
   ul {
-    margin: 1rem;
+    padding: 1rem;
 
     li {
+      list-style: none;
+      width: 100%;
+      gap: .5rem;
+
+      a {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        height: 40px;
+        padding: .25rem 1rem;
+        border-radius: var(--border-radius);
+
+        &:hover {
+          background-color: #00000007;
+        }
+
+        .icon {
+          font-size: 22px;
+        }
+      }
 
     }
+  }
+
+  hr {
+    margin: .25rem 1rem;
   }
 }

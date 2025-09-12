@@ -1,6 +1,54 @@
 <msuf-header
   (selectedQuestion)="onSelectQuestion($event)"></msuf-header>
-<msuf-navbar></msuf-navbar>
-<div class="adsense">
-  teste
-</div>
+  <main>
+    <msuf-navbar></msuf-navbar>
+
+
+    <section>
+      <div class="adsense">
+        Ad
+      </div>
+      @if (currentUser(); as userInfo) {
+        <h6>Welcome back, {{userInfo.user.username}}</h6>
+        {{userInfo.user.reputation}}
+      }
+      @for (question of questions(); track question.id) {
+        <a [routerLink]="['/question', question.id]">
+          <article>
+            <h2>{{question.title}}</h2>
+            <div
+              [innerHTML]="
+                question.body
+                  | limitCharactersLenght:300
+                  | formatBody">
+            </div>
+            <div class="footer-articles">
+              <div class="starter-footer">
+                <div class="counts">
+                  <div class="answers">
+                    {{question.answer_count}}
+                    <span>Answers</span>
+                  </div>
+                  <div class="views">
+                    {{question.view_count}}
+                    <span>Views</span>
+                  </div>
+                  <div class="votes">
+                    {{question.votes}}
+                    <span>Votes</span>
+                  </div>
+                </div>
+                {{question.updated_at | date}} Last updates
+              </div>
+              <div class="author">
+                <div class="user-profile">
+                  <img class="avatar" [src]="publicApi+question.avatar_url">
+                </div>
+                {{question.username}}
+              </div>
+            </div>
+          </article>
+        </a>
+      }
+    </section>
+  </main>
